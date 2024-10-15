@@ -5,33 +5,40 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+// Code bestand om alle nodige waardes voor de applicatie in op te slaan en te beheren.
+// Geschreven vanaf september 2023.
+
 namespace MarcosIcecastRecorder
 {
     internal class Values
     {
+        // Haal de gegeven filename op en pas waar nodig de placeholders aan met de nodige flexibele waardes.
         public static string GetFileName()
         {
-            string input = Config.FileName;
+            string input = Config.FileName;    // Ruwe filename staat in de Config class.
 
             string output = input
-                .Replace("%d", DateTime.Now.ToString("dd"))
-                .Replace("%m", DateTime.Now.ToString("MM"))
-                .Replace("%y", DateTime.Now.ToString("yyyy"))
-                .Replace("%H", DateTime.Now.ToString("HH"))
-                .Replace("%M", DateTime.Now.ToString("mm"))
-                .Replace("%S", DateTime.Now.ToString("ss"));
+                .Replace("%d", DateTime.Now.ToString("dd"))    // Zet %d om naar dag
+                .Replace("%m", DateTime.Now.ToString("MM"))    // Zet %m om naar maand
+                .Replace("%y", DateTime.Now.ToString("yyyy"))  // Zet %y om naar jaar
+                .Replace("%H", DateTime.Now.ToString("HH"))    // Zet %H om naar uren
+                .Replace("%M", DateTime.Now.ToString("mm"))    // Zet %M om naar minuten
+                .Replace("%S", DateTime.Now.ToString("ss"));   // Zet %S om naar seconden
 
-            return output;
+            return output;    // Geef uiteindelijk de daadwerkelijke naam terug.
         }
 
+        // Haal met deze method de volledige doellocatie op exclusief de bestandsnaam.
         public static string GetRecordPath(int recordmode)
         {
+            // Hier komt het ruwe pad in te staan.
             string config_folder;
-            if(Config.filePath == "*")
+            
+            if(Config.filePath == "*")    // Bekijk of de bestandspad leeg is. Als dat zo is, voor het volgende uit:
             {
                 config_folder = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             }
-            else
+            else    // Als het pad niet leeg is, vul de string met de LoggerLocation waarde, ofwel het pad waar de bestanden opgeslagen mogen worden.
             {
                 config_folder = Config.LoggerLocation;
             }
