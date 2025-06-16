@@ -49,7 +49,7 @@ namespace MarcosIcecastRecorder
             }
 
             // Programs.xml
-            if(!File.Exists(ProgramSchedule.filePath))  // Mocht het bestand niet aanwezig zijn, genereer een nieuwe programs.xml bestand.
+            if (!File.Exists(ProgramSchedule.filePath))  // Mocht het bestand niet aanwezig zijn, genereer een nieuwe programs.xml bestand.
             {
                 ProgramSchedule.SetDefaultSchedule();
             }

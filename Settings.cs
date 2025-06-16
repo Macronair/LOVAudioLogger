@@ -159,7 +159,7 @@ namespace MarcosIcecastRecorder
                 UseTempFolder = chkUseTempFolder.Checked,
                 DaysToKeep = Convert.ToInt32(nmrDaysToKeep.Value),
 
-                RecDurationInSec = 3600,
+                RecDurationInSec = Convert.ToInt32(nmrRecordingDuration.Value),
 
                 RecordingMode = recordingMode
             };
@@ -176,9 +176,11 @@ namespace MarcosIcecastRecorder
                 Program.recorder = new Thread(new ThreadStart(Recorder.SetRecordingMode));
                 Program.recorder.Start();
             }
-            catch
+            catch (Exception ex)
             {
-
+                Console.WriteLine("Error restarting recorder: " + ex.Message);
+                Console.ReadKey();
+                Application.Exit();
             }
             Console.Clear();
             Console.Clear();
