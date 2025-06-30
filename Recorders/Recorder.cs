@@ -12,25 +12,31 @@ namespace MarcosIcecastRecorder
 {
     internal class Recorder
     {
-        public static Process procRec;
-        static int pId;
-        public static bool RecordAgain = true;
-        public static string recordTo;
+        // Hoofdclass voor de daadwerkelijke opnames naar MP3.
+        
+        public static Process procRec;            // Het ffmpeg proces voor de opname
+        static int pId;    	                      // Het ID van het lopende proces.
+        public static bool RecordAgain = true;    // Deze staat meestal op true en laat het script opnieuw starten voor ee nieuwe opname. Wanneer deze op false staat, wordt de code maar 1x uitgevoerd.
+        public static string recordTo;            // Het pad waar het audiobestand nu naar geschreven wordt.
 
-        public static string logFile;
+        public static string logFile;             // Een buffer voor de logfile in de map van de applicatie.
 
+        // In deze method wordt eerst bepaald welke opnamemodus er gebruikt dient te worden (Fysieke geluidskaart of URL) + de log instellingen.
         public static void SetRecordingMode()
         {
+            // Zorg eerst dat de logbuffer leeg is.
             if (logFile != null)
             {
-                FileManager.WriteAutoLogFile();
+                FileManager.WriteAutoLogFile();    // Indien niet leeg, schrijf dit naar de huidige logfile.
             }
 
-            logFile = Config.logPath + $@"\Log_{DateTime.Now.ToString("yyyy_MM_dd__HH_mm_ss")}.txt";
-            FileManager.l_filename = Values.GetFileName();
-            FileManager.l_folder = Values.GetRecordPath(Config.RecordingMode);
+            // Vervolgens worden er nieuwe waardes ingeladen.
+            logFile = Config.logPath + $@"\Log_{DateTime.Now.ToString("yyyy_MM_dd__HH_mm_ss")}.txt";    // De locatie van het nieuwe logbestand.
+            FileManager.l_filename = Values.GetFileName();                                              // De nieuwe bestandsnaam voor de opname.
+            FileManager.l_folder = Values.GetRecordPath(Config.RecordingMode);                          // De nieuwe bestandslocatie voor de opname.
 
-            if (Config.UseTempFolder == true )
+            // Moet er eerst naar een tijdelijke map geschreven worden voordat de opname naar de eindlocatie gaat?
+            if (Config.UseTempFolder == true )  // Als dit nodig is, dan...
             {
                 recordTo = Config.tempPath;
 
@@ -39,7 +45,7 @@ namespace MarcosIcecastRecorder
                     FileManager.l_filename = FileManager.l_filename + "_" + DateTime.Now.ToString("ss");
                 }
             }
-            else
+            else  // Als dit niet nodig is, dan...
             {
                 recordTo = FileManager.l_folder;
                 if(!Directory.Exists(FileManager.l_folder))
@@ -53,7 +59,7 @@ namespace MarcosIcecastRecorder
                 }
             }
             
-
+            // Geef een overzicht in de console en logfile van de huidige instellingen.
             Console.WriteLine("Current program: " + Values.GetCurrentProgram());
             FileManager.WriteLogFile("Current program: " + Values.GetCurrentProgram());
             Console.WriteLine("Output file: " + recordTo + @"\" + FileManager.l_filename);
@@ -63,18 +69,21 @@ namespace MarcosIcecastRecorder
             Console.WriteLine("Use physical audio device: " + Config.UsePhysicalDevice);
             FileManager.WriteLogFile("Use physical audio device: " + Config.UsePhysicalDevice);
 
+            // Als er een verloopdatum zit aan de opnames, dan worden de opnames in een JSON bestand opgeslagen.
+            // Hier wordt gekeken of dit nodig is.
             if (Config.DaysToKeep > 0)
             {
                 FileManager.InsertToJson();
             }
 
+            // De daadwerkelijke opnamemethode.
             if (Config.UsePhysicalDevice)
             {
-                PhysicalStartRecord();
+                PhysicalStartRecord();    // Gebruik de fysieke geluidskaart.
             }
             else
             {
-                URLStartRecord();
+                URLStartRecord();         // Gebruik een Icecast URL.
             }
         }
 
